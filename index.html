@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="icon" href="favicon.jpg">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aevon — AI automation for Lagos businesses</title>
@@ -40,7 +39,6 @@
     padding: 0 28px;
   }
 
-  /* NAV */
   header {
     position: sticky;
     top: 0;
@@ -74,7 +72,6 @@
   }
   .nav-cta:hover { background: #1e2f57; transform: translateY(-1px); }
 
-  /* HERO */
   .hero {
     padding: 88px 0 64px;
     display: grid;
@@ -126,7 +123,7 @@
     transition: transform 0.15s ease, background 0.15s ease;
   }
   .btn-primary:hover { background: #1e2f57; transform: translateY(-1px); }
-  .btn-primary:focus-visible, a:focus-visible, input:focus-visible, .btn-primary:focus-visible {
+  .btn-primary:focus-visible, a:focus-visible, input:focus-visible {
     outline: 2px solid var(--amber);
     outline-offset: 3px;
   }
@@ -136,7 +133,6 @@
     color: var(--slate);
   }
 
-  /* PHONE MOCK — signature element */
   .phone {
     background: var(--ink);
     border-radius: 22px;
@@ -231,7 +227,6 @@
     .bubble, .typing { animation: none !important; opacity: 1 !important; transform: none !important; }
   }
 
-  /* PROBLEM STRIP */
   .strip {
     background: var(--ink);
     color: var(--paper);
@@ -254,7 +249,6 @@
     color: #D7DCE8;
   }
 
-  /* SECTION GENERIC */
   section.block { padding: 88px 0; }
   .section-head { max-width: 60ch; margin-bottom: 48px; }
   .section-eyebrow {
@@ -272,7 +266,6 @@
     letter-spacing: -0.01em;
   }
 
-  /* SERVICE GRID */
   .service-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -292,7 +285,6 @@
   }
   .service-card p { color: var(--slate); font-size: 14.5px; }
 
-  /* HOW IT WORKS */
   .steps {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -309,7 +301,6 @@
   .step h3 { font-family: var(--display); font-size: 17px; margin-bottom: 8px; color: var(--ink); }
   .step p { font-size: 14.5px; color: var(--slate); }
 
-  /* WAITLIST */
   .waitlist {
     background: var(--ink);
     color: var(--paper);
@@ -481,9 +472,9 @@
       <p class="sub">Join the waitlist and we'll reach out to set up your free 30-day pilot.</p>
     </div>
     <div>
-      <form id="waitlist-form">
-        <input type="text" id="business-name" placeholder="Business name" required>
-        <select id="business-type" required>
+      <form id="waitlist-form" action="https://formspree.io/f/maqrbwdb" method="POST">
+        <input type="text" id="business-name" name="business_name" placeholder="Business name" required>
+        <select id="business-type" name="business_type" required>
           <option value="" disabled selected>What kind of business?</option>
           <option>Shop / retail</option>
           <option>School</option>
@@ -492,7 +483,7 @@
           <option>Restaurant / food</option>
           <option>Other</option>
         </select>
-        <input type="tel" id="whatsapp" placeholder="WhatsApp number" required>
+        <input type="tel" id="whatsapp" name="whatsapp_number" placeholder="WhatsApp number" required>
         <button type="submit" class="btn-primary">Join the waitlist</button>
         <div class="form-note">No spam. We'll message you directly to set up your pilot.</div>
         <div class="confirm" id="confirm-msg">You're on the list. We'll reach out on WhatsApp shortly.</div>
@@ -511,8 +502,30 @@
     e.preventDefault();
     const form = e.target;
     const confirmMsg = document.getElementById('confirm-msg');
-    form.querySelectorAll('input, select, button').forEach(el => el.disabled = true);
-    confirmMsg.style.display = 'block';
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending...';
+
+    fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { 'Accept': 'application/json' }
+    })
+    .then(response => {
+      if (response.ok) {
+        form.querySelectorAll('input, select, button').forEach(el => el.disabled = true);
+        confirmMsg.style.display = 'block';
+      } else {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Join the waitlist';
+        alert('Something went wrong — please try again.');
+      }
+    })
+    .catch(() => {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Join the waitlist';
+      alert('Something went wrong — please try again.');
+    });
   });
 </script>
 
